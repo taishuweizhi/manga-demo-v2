@@ -2094,19 +2094,20 @@ function initNav() {
     });
   });
   
-  // 滚动监听
-  const sections = document.querySelectorAll('.section');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        document.querySelectorAll('.nav-item').forEach(item => {
-          item.classList.toggle('active', item.dataset.target === entry.target.id);
-        });
-      }
-    });
-  }, { threshold: 0.3 });
-  
-  sections.forEach(section => observer.observe(section));
+  // 滚动监听（兼容不支持IntersectionObserver的浏览器）
+  if (typeof IntersectionObserver !== 'undefined') {
+    const sections = document.querySelectorAll('.section');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.toggle('active', item.dataset.target === entry.target.id);
+          });
+        }
+      });
+    }, { threshold: 0.3 });
+    sections.forEach(section => observer.observe(section));
+  }
 }
 
 // ==================== 剧本分析 ====================
