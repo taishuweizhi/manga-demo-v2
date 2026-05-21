@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>漫剧工作流 DEMO v12.1</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    :root {
+      --bg-primary: #0a0a14;
+      --bg-secondary: #12121e;
+      --color-cyan: #00d4ff;
+      --color-indigo: #6366f1;
+      --color-text: #e0e0e0;
+      --color-muted: #888;
+      --color-success: #22c55e;
+      --color-danger: #ef4444;
+      --color-warning: #f59e0b;
+      --border-color: #2a2a3e;
+      --glass-bg: rgba(20, 20, 35, 0.8);
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: linear-gradient(135deg, #0a0a14 0%, #12121e 100%); min-height: 100vh; color: #e0e0e0; line-height: 1.6;">
+  
+  <!-- 顶部栏 -->
+  <header id="header" style="position: fixed; top: 0; left: 0; right: 0; height: 60px; background: rgba(10, 10, 20, 0.95); border-bottom: 1px solid #2a2a3e; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; z-index: 100; backdrop-filter: blur(10px);">
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <h1 style="font-size: 20px; font-weight: 600; background: linear-gradient(90deg, #00d4ff, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">漫剧工作流</h1>
+      <div style="display: flex; gap: 8px; font-size: 12px; color: #888;">
+        <span style="background: rgba(99, 102, 241, 0.2); padding: 2px 8px; border-radius: 4px;">穿成霍去病</span>
+        <span style="color: #00d4ff;">30集</span>
+        <span style="color: #6366f1;">180分镜</span>
+      </div>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <button onclick="openModal('characterLibModal')" style="background: rgba(99, 102, 241, 0.2); color: #6366f1; border: 1px solid #6366f1; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.2s;" onmouseover="this.style.background='rgba(99, 102, 241, 0.4)'" onmouseout="this.style.background='rgba(99, 102, 241, 0.2)'">角色库</button>
+      <button onclick="openModal('sceneLibModal')" style="background: rgba(0, 212, 255, 0.2); color: #00d4ff; border: 1px solid #00d4ff; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.2s;" onmouseover="this.style.background='rgba(0, 212, 255, 0.4)'" onmouseout="this.style.background='rgba(0, 212, 255, 0.2)'">场景库</button>
+      <button onclick="openModal('propLibModal')" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.2s;" onmouseover="this.style.background='rgba(245, 158, 11, 0.4)'" onmouseout="this.style.background='rgba(245, 158, 11, 0.2)'">道具库</button>
+    </div>
+  </header>
+
+  <!-- 左侧导航 -->
+  <nav id="sidebar" style="position: fixed; left: 0; top: 60px; width: 180px; bottom: 0; background: rgba(10, 10, 20, 0.8); border-right: 1px solid #2a2a3e; padding: 20px 0; z-index: 90;">
+    <div style="padding: 0 16px; margin-bottom: 8px; font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px;">导航</div>
+    <a href="#step1" onclick="setActiveNav(this)" class="nav-item active" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #888; text-decoration: none; font-size: 14px; transition: all 0.2s; border-left: 3px solid transparent;" onmouseover="this.style.color='#00d4ff';this.style.borderLeftColor='#00d4ff'" onmouseout="this.style.color=this.classList.contains('active')?'#00d4ff':'#888';this.style.borderLeftColor=this.classList.contains('active')?'#00d4ff':'transparent'">
+      <span style="font-size: 18px;">📜</span>原始剧本
+    </a>
+    <a href="#step2" onclick="setActiveNav(this)" class="nav-item" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #888; text-decoration: none; font-size: 14px; transition: all 0.2s; border-left: 3px solid transparent;" onmouseover="this.style.color='#00d4ff';this.style.borderLeftColor='#00d4ff'" onmouseout="this.style.color=this.classList.contains('active')?'#00d4ff':'#888';this.style.borderLeftColor=this.classList.contains('active')?'#00d4ff':'transparent'">
+      <span style="font-size: 18px;">🎬</span>剧集面板
+    </a>
+    <a href="#step3" onclick="setActiveNav(this)" class="nav-item" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #888; text-decoration: none; font-size: 14px; transition: all 0.2s; border-left: 3px solid transparent;" onmouseover="this.style.color='#00d4ff';this.style.borderLeftColor='#00d4ff'" onmouseout="this.style.color=this.classList.contains('active')?'#00d4ff':'#888';this.style.borderLeftColor=this.classList.contains('active')?'#00d4ff':'transparent'">
+      <span style="font-size: 18px;">🎞️</span>分镜列表
+    </a>
+    <a href="#step4" onclick="setActiveNav(this)" class="nav-item" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #888; text-decoration: none; font-size: 14px; transition: all 0.2s; border-left: 3px solid transparent;" onmouseover="this.style.color='#00d4ff';this.style.borderLeftColor='#00d4ff'" onmouseout="this.style.color=this.classList.contains('active')?'#00d4ff':'#888';this.style.borderLeftColor=this.classList.contains('active')?'#00d4ff':'transparent'">
+      <span style="font-size: 18px;">🎥</span>生成视频
+    </a>
+  </nav>
+
+  <!-- 主内容区 -->
+  <main style="margin-left: 180px; margin-top: 60px; padding: 24px; max-width: 1400px;">
+    
+    <!-- 步骤1：原始剧本 -->
+    <section id="step1" style="margin-bottom: 32px; padding: 24px; background: rgba(20, 20, 35, 0.6); border: 1px solid #2a2a3e; border-radius: 12px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+        <span style="width: 32px; height: 32px; background: linear-gradient(135deg, #00d4ff, #6366f1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">1</span>
+        <h2 style="font-size: 18px; font-weight: 600; color: #fff;">原始剧本</h2>
+      </div>
+      
+      <div style="height: 300px; overflow-y: auto; background: rgba(0, 0, 0, 0.3); border-radius: 8px; padding: 16px; margin-bottom: 16px; border: 1px solid #2a2a3e;">
+        <pre id="scriptContent" style="white-space: pre-wrap; font-size: 13px; line-height: 1.8; color: #b0b0b0;"></pre>
+      </div>
+      
+      <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <label style="font-size: 12px; color: #888;">剧本类型</label>
+          <select id="scriptType" style="background: rgba(30, 30, 50, 0.8); color: #e0e0e0; border: 1px solid #2a2a3e; padding: 8px 12px; border-radius: 6px; font-size: 13px; min-width: 140px; cursor: pointer;">
+            <option value="narrate">解说剧</option>
+            <option value="realistic">仿真人短剧</option>
+            <option value="2d" selected>2D动态漫剧</option>
+          </select>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <label style="font-size: 12px; color: #888;">画面比例</label>
+          <select id="aspectRatio" style="background: rgba(30, 30, 50, 0.8); color: #e0e0e0; border: 1px solid #2a2a3e; padding: 8px 12px; border-radius: 6px; font-size: 13px; min-width: 100px; cursor: pointer;">
+            <option value="9:16" selected>9:16</option>
+            <option value="16:9">16:9</option>
+            <option value="1:1">1:1</option>
+          </select>
+        </div>
+        <button id="analyzeBtn" onclick="analyzeScript()" style="background: linear-gradient(135deg, #00d4ff, #6366f1); color: #fff; border: none; padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 18px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(0, 212, 255, 0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 15px rgba(0, 212, 255, 0.3)'">
+          AI剧本分析
+        </button>
+      </div>
+      
+      <div id="analyzeProgress" style="display: none; margin-top: 16px; padding: 16px; background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 8px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 20px; height: 20px; border: 2px solid #00d4ff; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+          <span id="progressText" style="color: #00d4ff; font-size: 14px;">正在清洗剧本...</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 步骤2：剧集面板 -->
+    <section id="step2" style="margin-bottom: 32px; padding: 24px; background: rgba(20, 20, 35, 0.6); border: 1px solid #2a2a3e; border-radius: 12px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+        <span style="width: 32px; height: 32px; background: linear-gradient(135deg, #00d4ff, #6366f1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">2</span>
+        <h2 style="font-size: 18px; font-weight: 600; color: #fff;">剧集面板</h2>
+      </div>
+      
+      <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;" id="episodeTabs"></div>
+      
+      <div id="episodeCards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;"></div>
+      
+      <div id="episodePagination" style="display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 20px;"></div>
+    </section>
+
+    <!-- 步骤3：分镜列表 -->
+    <section id="step3" style="margin-bottom: 32px; padding: 24px; background: rgba(20, 20, 35, 0.6); border: 1px solid #2a2a3e; border-radius: 12px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+        <span style="width: 32px; height: 32px; background: linear-gradient(135deg, #00d4ff, #6366f1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">3</span>
+        <h2 style="font-size: 18px; font-weight: 600; color: #fff;">分镜列表</h2>
+      </div>
+      
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+          <thead>
+            <tr style="background: rgba(99, 102, 241, 0.15);">
+              <th style="padding: 12px 8px; text-align: left; color: #888; font-weight: 500; border-bottom: 1px solid #2a2a3e; white-space: nowrap;">镜号</th>
+              <th style="padding: 12px 8px; text-align: left; color: #888; font-weight: 500; border-bottom: 1px solid #2a2a3e; white-space: nowrap;">描述</th>
+              <th style="padding: 12px 8px; text-align: left; color: #888; font-weight: 500; border-bottom: 1px solid #2a2a3e; white-space: nowrap;">景别</th>
+              <th style="padding: 12px 8px; text-align: left; color: #888; font-weight: 500; border-bottom: 1px solid #2a2a3e; white-space: nowrap;">运镜</th>
+              <th style="padding: 12px 8px; text-align: left; color: #888; font-weight: 500; border-bottom: 1px solid #2a2a3e; white-space: nowrap;">关联角色</th>
+              <th style="padding: 12px 8px; text-align: left; color: #888; font-weight: 500; border-bottom: 1px solid #2a2a3e; white-space: nowrap;">关联场景</th>
+              <th style="padding: 12px 8px; text-align: left; color: #888; font-weight: 500; border-bottom: 1px solid #2a2a3e; white-space: nowrap;">关联道具</th>
+              <th style="padding: 12px 8px; text-align: left; color: #888; font-weight: 500; border-bottom: 1px solid #2a2a3e; white-space: nowrap;">对白/旁白</th>
+              <th style="padding: 12px 8px; text-align: left; color: #888; font-weight: 500; border-bottom: 1px solid #2a2a3e; white-space: nowrap;">操作</th>
+            </tr>
+          </thead>
+          <tbody id="storyboardTable"></tbody>
+        </table>
+      </div>
+      
+      <button onclick="openAddStoryboardModal()" style="background: rgba(0, 212, 255, 0.2); color: #00d4ff; border: 1px dashed #00d4ff; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 13px; margin-top: 16px; transition: all 0.2s; width: 100%;" onmouseover="this.style.background='rgba(0, 212, 255, 0.3)'" onmouseout="this.style.background='rgba(0, 212, 255, 0.2)'">+ 新增分镜</button>
+    </section>
+
+    <!-- 步骤4：生成视频 -->
+    <section id="step4" style="margin-bottom: 32px; padding: 24px; background: rgba(20, 20, 35, 0.6); border: 1px solid #2a2a3e; border-radius: 12px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="width: 32px; height: 32px; background: linear-gradient(135deg, #00d4ff, #6366f1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">4</span>
+          <h2 style="font-size: 18px; font-weight: 600; color: #fff;">生成视频</h2>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button onclick="batchGenerate()" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">批量生成</button>
+          <button style="background: rgba(99, 102, 241, 0.2); color: #6366f1; border: 1px solid #6366f1; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.2s;" onmouseover="this.style.background='rgba(99, 102, 241, 0.4)'" onmouseout="this.style.background='rgba(99, 102, 241, 0.2)'">全部导出</button>
+        </div>
+      </div>
+      
+      <div id="videoCards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;"></div>
+    </section>
+  </main>
+
+  <!-- 分镜详情弹窗（合并查看+编辑） -->
+  <div id="detailModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); z-index: 200; overflow-y: auto; padding: 20px;">
+    <div style="background: #12121e; border-radius: 12px; width: 1100px; max-width: 95vw; margin: 20px auto; border: 1px solid #2a2a3e;">
+      <div style="padding: 20px 24px; border-bottom: 1px solid #2a2a3e; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 16px; font-weight: 600; color: #fff;">分镜详情</h3>
+        <button onclick="closeModal('detailModal')" style="background: none; border: none; color: #888; font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0;">
+        <!-- 左半区：分镜内容 -->
+        <div style="padding: 24px; border-right: 1px solid #2a2a3e;">
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">镜头号</label>
+            <input id="detailShotNum" readonly style="width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #888; font-size: 13px;">
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+            <div>
+              <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">景别</label>
+              <select id="detailShotType" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px;">
+                <option value="特写">特写</option>
+                <option value="近景">近景</option>
+                <option value="中景">中景</option>
+                <option value="全景">全景</option>
+                <option value="远景">远景</option>
+              </select>
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">运镜</label>
+              <select id="detailCameraMove" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px;">
+                <option value="固定">固定</option>
+                <option value="推镜">推镜</option>
+                <option value="拉镜">拉镜</option>
+                <option value="跟拍">跟拍</option>
+                <option value="横移">横移</option>
+                <option value="升降">升降</option>
+                <option value="环绕">环绕</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">时长/秒</label>
+            <input id="detailDuration" type="number" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px;">
+          </div>
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">描述</label>
+            <textarea id="detailContent" rows="4" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px; resize: vertical;"></textarea>
+          </div>
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">对白/旁白</label>
+            <textarea id="detailDialogue" rows="2" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px; resize: vertical;"></textarea>
+          </div>
+          <div style="margin-bottom: 16px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" id="detailHasAudio" style="width: 16px; height: 16px; accent-color: #00d4ff;">
+              <span style="font-size: 13px; color: #e0e0e0;">有声视频</span>
+            </label>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+            <div>
+              <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">关联角色</label>
+              <div id="detailCharTags" style="display: flex; flex-wrap: wrap; gap: 4px;"></div>
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">关联场景</label>
+              <div id="detailSceneTags" style="display: flex; flex-wrap: wrap; gap: 4px;"></div>
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">关联道具</label>
+              <div id="detailPropTags" style="display: flex; flex-wrap: wrap; gap: 4px;"></div>
+            </div>
+          </div>
+        </div>
+        <!-- 右半区：视频生成多参配置 -->
+        <div style="padding: 24px;">
+          <h4 style="font-size: 14px; font-weight: 600; color: #00d4ff; margin-bottom: 16px;">视频生成参数</h4>
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">参考图片 (0/3)</label>
+            <div id="detailRefImages" style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <div onclick="addRefImage('detail')" style="width: 80px; height: 80px; border: 1px dashed #2a2a3e; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #888; font-size: 24px; transition: all 0.2s;" onmouseover="this.style.borderColor='#00d4ff';this.style.color='#00d4ff'" onmouseout="this.style.borderColor='#2a2a3e';this.style.color='#888'">+</div>
+            </div>
+          </div>
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">角色</label>
+            <select id="detailVideoChar" onchange="updateVideoAssetImage('detail', 'char')" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px;">
+              <option value="">选择角色...</option>
+            </select>
+            <div id="detailCharImages" style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;"></div>
+          </div>
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">场景</label>
+            <select id="detailVideoScene" onchange="updateVideoAssetImage('detail', 'scene')" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px;">
+              <option value="">选择场景...</option>
+            </select>
+            <div id="detailSceneImages" style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;"></div>
+          </div>
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">道具</label>
+            <select id="detailVideoProp" onchange="updateVideoAssetImage('detail', 'prop')" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px;">
+              <option value="">选择道具...</option>
+            </select>
+            <div id="detailPropImages" style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;"></div>
+          </div>
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">视频提示词</label>
+            <textarea id="detailVideoPrompt" rows="2" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px; resize: vertical;"></textarea>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;">
+            <div>
+              <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">模型</label>
+              <select id="detailModel" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px;">
+                <option value="seedance">豆包-Seedance-2.0</option>
+                <option value="wanxiang">万向-2.6-图生视频</option>
+              </select>
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">分辨率</label>
+              <select style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px;">
+                <option value="720p">720P</option>
+              </select>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+            <div>
+              <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">比例</label>
+              <select id="detailRatio" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px;">
+                <option value="9:16">9:16</option>
+                <option value="16:9">16:9</option>
+                <option value="1:1">1:1</option>
+              </select>
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">时长</label>
+              <select id="detailDurationSelect" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px;">
+                <option value="4">4s</option>
+                <option value="5">5s</option>
+                <option value="6">6s</option>
+                <option value="8">8s</option>
+                <option value="10">10s</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="padding: 16px 24px; border-top: 1px solid #2a2a3e; display: flex; justify-content: space-between; align-items: center;">
+        <button onclick="saveStoryboardDetail()" style="background: rgba(99, 102, 241, 0.2); color: #6366f1; border: 1px solid #6366f1; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 13px;" onmouseover="this.style.background='rgba(99, 102, 241, 0.4)'" onmouseout="this.style.background='rgba(99, 102, 241, 0.2)'">保存</button>
+        <div style="display: flex; gap: 8px;">
+          <button id="detailHistoryBtn" onclick="openHistoryModal('detail')" style="display: none; background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 13px;" onmouseover="this.style.background='rgba(245, 158, 11, 0.4)'" onmouseout="this.style.background='rgba(245, 158, 11, 0.2)'">查看历史</button>
+          <button onclick="generateVideoFromDetail()" style="background: linear-gradient(135deg, #00d4ff, #6366f1); color: #fff; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">生成视频</button>
+          <button onclick="closeModal('detailModal')" style="background: rgba(100, 100, 100, 0.2); color: #888; border: 1px solid #444; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 13px;" onmouseover="this.style.background='rgba(100, 100, 100, 0.4)'" onmouseout="this.style.background='rgba(100, 100, 100, 0.2)'">关闭</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 历史记录弹窗 -->
+  <div id="historyModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); z-index: 300; overflow-y: auto; padding: 20px;">
+    <div style="background: #12121e; border-radius: 12px; width: 800px; max-width: 95vw; margin: 40px auto; border: 1px solid #2a2a3e;">
+      <div style="padding: 20px 24px; border-bottom: 1px solid #2a2a3e; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 16px; font-weight: 600; color: #fff;">生成历史</h3>
+        <button onclick="closeModal('historyModal')" style="background: none; border: none; color: #888; font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
+      </div>
+      <div id="historyList" style="padding: 16px 24px; max-height: 400px; overflow-y: auto;"></div>
+      <div style="padding: 16px 24px; border-top: 1px solid #2a2a3e; display: flex; justify-content: flex-end;">
+        <button onclick="closeModal('historyModal')" style="background: rgba(100, 100, 100, 0.2); color: #888; border: 1px solid #444; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 13px;">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 角色库弹窗 -->
+  <div id="characterLibModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); z-index: 300; overflow-y: auto; padding: 20px;">
+    <div style="background: #12121e; border-radius: 12px; width: 900px; max-width: 95vw; margin: 40px auto; border: 1px solid #2a2a3e;">
+      <div style="padding: 20px 24px; border-bottom: 1px solid #2a2a3e; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 16px; font-weight: 600; color: #fff;">角色库</h3>
+        <button onclick="closeModal('characterLibModal')" style="background: none; border: none; color: #888; font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
+      </div>
+      <div id="characterLibList" style="padding: 16px 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;"></div>
+    </div>
+  </div>
+
+  <!-- 角色编辑弹窗 -->
+  <div id="characterEditModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); z-index: 400; overflow-y: auto; padding: 20px;">
+    <div style="background: #12121e; border-radius: 12px; width: 600px; max-width: 95vw; margin: 40px auto; border: 1px solid #2a2a3e;">
+      <div style="padding: 20px 24px; border-bottom: 1px solid #2a2a3e; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 16px; font-weight: 600; color: #fff;">编辑角色</h3>
+        <button onclick="closeModal('characterEditModal')" style="background: none; border: none; color: #888; font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
+      </div>
+      <div style="padding: 24px;">
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">名称</label>
+          <input id="charEditName" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px;">
+        </div>
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">类型</label>
+          <select id="charEditType" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px;">
+            <option value="protagonist">主角</option>
+            <option value="supporting">配角</option>
+            <option value="extra">龙套</option>
+          </select>
+        </div>
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">描述</label>
+          <textarea id="charEditDesc" rows="3" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px; resize: vertical;"></textarea>
+        </div>
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">角色参考图</label>
+          <div id="charEditImages" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+          <button onclick="regenerateImage('char')" style="margin-top: 10px; background: rgba(99, 102, 241, 0.2); color: #6366f1; border: 1px solid #6366f1; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px;" onmouseover="this.style.background='rgba(99, 102, 241, 0.4)'" onmouseout="this.style.background='rgba(99, 102, 241, 0.2)'">🔄 重新生成图片</button>
+        </div>
+      </div>
+      <div style="padding: 16px 24px; border-top: 1px solid #2a2a3e; display: flex; justify-content: space-between;">
+        <button onclick="deleteCharacter()" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 13px;" onmouseover="this.style.background='rgba(239, 68, 68, 0.4)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.2)'">删除</button>
+        <button onclick="saveCharacter()" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 场景库弹窗 -->
+  <div id="sceneLibModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); z-index: 300; overflow-y: auto; padding: 20px;">
+    <div style="background: #12121e; border-radius: 12px; width: 900px; max-width: 95vw; margin: 40px auto; border: 1px solid #2a2a3e;">
+      <div style="padding: 20px 24px; border-bottom: 1px solid #2a2a3e; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 16px; font-weight: 600; color: #fff;">场景库</h3>
+        <button onclick="closeModal('sceneLibModal')" style="background: none; border: none; color: #888; font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
+      </div>
+      <div id="sceneLibList" style="padding: 16px 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;"></div>
+    </div>
+  </div>
+
+  <!-- 场景编辑弹窗 -->
+  <div id="sceneEditModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); z-index: 400; overflow-y: auto; padding: 20px;">
+    <div style="background: #12121e; border-radius: 12px; width: 600px; max-width: 95vw; margin: 40px auto; border: 1px solid #2a2a3e;">
+      <div style="padding: 20px 24px; border-bottom: 1px solid #2a2a3e; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 16px; font-weight: 600; color: #fff;">编辑场景</h3>
+        <button onclick="closeModal('sceneEditModal')" style="background: none; border: none; color: #888; font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
+      </div>
+      <div style="padding: 24px;">
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">名称</label>
+          <input id="sceneEditName" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px;">
+        </div>
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">时间段</label>
+          <select id="sceneEditTime" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px;">
+            <option value="day">白天</option>
+            <option value="night">夜晚</option>
+            <option value="dusk">黄昏</option>
+            <option value="dawn">黎明</option>
+          </select>
+        </div>
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">描述</label>
+          <textarea id="sceneEditDesc" rows="3" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px; resize: vertical;"></textarea>
+        </div>
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">场景参考图</label>
+          <div id="sceneEditImages" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+          <button onclick="regenerateImage('scene')" style="margin-top: 10px; background: rgba(0, 212, 255, 0.2); color: #00d4ff; border: 1px solid #00d4ff; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px;" onmouseover="this.style.background='rgba(0, 212, 255, 0.4)'" onmouseout="this.style.background='rgba(0, 212, 255, 0.2)'">🔄 重新生成图片</button>
+        </div>
+      </div>
+      <div style="padding: 16px 24px; border-top: 1px solid #2a2a3e; display: flex; justify-content: space-between;">
+        <button onclick="deleteScene()" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 13px;" onmouseover="this.style.background='rgba(239, 68, 68, 0.4)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.2)'">删除</button>
+        <button onclick="saveScene()" style="background: linear-gradient(135deg, #00d4ff, #0099cc); color: #fff; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 道具库弹窗 -->
+  <div id="propLibModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); z-index: 300; overflow-y: auto; padding: 20px;">
+    <div style="background: #12121e; border-radius: 12px; width: 900px; max-width: 95vw; margin: 40px auto; border: 1px solid #2a2a3e;">
+      <div style="padding: 20px 24px; border-bottom: 1px solid #2a2a3e; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 16px; font-weight: 600; color: #fff;">道具库</h3>
+        <button onclick="closeModal('propLibModal')" style="background: none; border: none; color: #888; font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
+      </div>
+      <div id="propLibList" style="padding: 16px 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;"></div>
+    </div>
+  </div>
+
+  <!-- 道具编辑弹窗 -->
+  <div id="propEditModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); z-index: 400; overflow-y: auto; padding: 20px;">
+    <div style="background: #12121e; border-radius: 12px; width: 600px; max-width: 95vw; margin: 40px auto; border: 1px solid #2a2a3e;">
+      <div style="padding: 20px 24px; border-bottom: 1px solid #2a2a3e; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 16px; font-weight: 600; color: #fff;">编辑道具</h3>
+        <button onclick="closeModal('propEditModal')" style="background: none; border: none; color: #888; font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
+      </div>
+      <div style="padding: 24px;">
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">名称</label>
+          <input id="propEditName" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px;">
+        </div>
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">类别</label>
+          <select id="propEditCategory" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px;">
+            <option value="weapon">武器</option>
+            <option value="clothing">服饰</option>
+            <option value="vehicle">载具</option>
+            <option value="other">其他</option>
+          </select>
+        </div>
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">描述</label>
+          <textarea id="propEditDesc" rows="3" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px; resize: vertical;"></textarea>
+        </div>
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">道具参考图</label>
+          <div id="propEditImages" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+          <button onclick="regenerateImage('prop')" style="margin-top: 10px; background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px;" onmouseover="this.style.background='rgba(245, 158, 11, 0.4)'" onmouseout="this.style.background='rgba(245, 158, 11, 0.2)'">🔄 重新生成图片</button>
+        </div>
+      </div>
+      <div style="padding: 16px 24px; border-top: 1px solid #2a2a3e; display: flex; justify-content: space-between;">
+        <button onclick="deleteProp()" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 13px;" onmouseover="this.style.background='rgba(239, 68, 68, 0.4)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.2)'">删除</button>
+        <button onclick="saveProp()" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 剧集编辑弹窗 -->
+  <div id="episodeEditModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); z-index: 300; overflow-y: auto; padding: 20px;">
+    <div style="background: #12121e; border-radius: 12px; width: 500px; max-width: 95vw; margin: 40px auto; border: 1px solid #2a2a3e;">
+      <div style="padding: 20px 24px; border-bottom: 1px solid #2a2a3e; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 16px; font-weight: 600; color: #fff;">编辑剧集</h3>
+        <button onclick="closeModal('episodeEditModal')" style="background: none; border: none; color: #888; font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
+      </div>
+      <div style="padding: 24px;">
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">场景</label>
+          <input id="episodeEditScene" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px;">
+        </div>
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">人物</label>
+          <input id="episodeEditCharacters" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px;">
+        </div>
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; color: #888; margin-bottom: 6px;">摘要</label>
+          <textarea id="episodeEditSummary" rows="3" style="width: 100%; background: rgba(30, 30, 50, 0.8); border: 1px solid #2a2a3e; padding: 10px 12px; border-radius: 6px; color: #e0e0e0; font-size: 13px; resize: vertical;"></textarea>
+        </div>
+      </div>
+      <div style="padding: 16px 24px; border-top: 1px solid #2a2a3e; display: flex; justify-content: flex-end; gap: 8px;">
+        <button onclick="deleteEpisode()" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 13px;" onmouseover="this.style.background='rgba(239, 68, 68, 0.4)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.2)'">删除</button>
+        <button onclick="saveEpisode()" style="background: linear-gradient(135deg, #00d4ff, #6366f1); color: #fff; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 图片放大预览遮罩 -->
+  <div id="imagePreviewModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); z-index: 500; align-items: center; justify-content: center;" onclick="closeModal('imagePreviewModal')">
+    <img id="previewImage" style="max-width: 90vw; max-height: 90vh; border-radius: 8px; box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);">
+    <button onclick="closeModal('imagePreviewModal')" style="position: absolute; top: 20px; right: 20px; background: none; border: none; color: #fff; font-size: 32px; cursor: pointer; line-height: 1;">&times;</button>
+  </div>
+
+  <style>
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+
+  <script>
+    // 全局数据
+    let currentEpisode = 1;
+    let currentEpisodePage = 1;
+    const episodesPerPage = 10;
+    let currentStoryboardId = null;
+    let currentCharId = null;
+    let currentSceneId = null;
+    let currentPropId = null;
+    let currentEpisodeId = null;
+    let historyContext = '';
+
+    // 模拟数据
+    const scriptContent = `《穿成霍去病》第一集
+
+【场景一：现代都市·办公室】
+旁白：林晓是一名历史研究员，专攻汉代军事史。这天，他正在整理一份关于霍去病的资料。
+
+林晓：（看着电脑）"霍去病，年仅十八岁就率军深入漠北，封狼居胥，简直是天生的军事奇才……"
+
+突然，电脑屏幕闪出一道强光。
+
+【场景二：汉代·军营大帐】
+霍去病：（猛然惊醒）"这是哪里？"
+
+士兵：（慌张闯入）"将军！匈奴大军正在逼近！"
+
+霍去病：（猛然站起）"传令下去，全军备战！"
+
+【场景三：战场·沙盘前】
+霍去病：（手指沙盘）"敌在东，我在西。命轻骑绕后，断其粮道！"
+
+副将："将军，此计太冒险！"
+
+霍去病：（目光坚定）"兵贵神速，敢不敢赌？"
+
+【场景四：战场·骑兵冲锋】
+画面：万马奔腾，烟尘滚滚。
+
+旁白：这一战，将改变整个汉匈战争的格局。
+
+霍去病：（高举长剑）"冲！"
+
+【场景五：战场·胜利后】
+霍去病：（勒马远眺）"封狼居胥，今日终于实现了。"
+
+副将：（敬佩地）"将军神威！"
+
+霍去病：（微微一笑）"这才刚刚开始。"`;
+
+    const characters = [
+      { id: 'char1', name: '霍去病', type: 'protagonist', desc: '西汉天才少年将军，十八岁封冠军侯', image: 'https://picsum.photos/seed/char1/200/300', configured: true },
+      { id: 'char2', name: '林晓', type: 'protagonist', desc: '现代历史研究员，穿越前研究霍去病', image: 'https://picsum.photos/seed/char2/200/300', configured: true },
+      { id: 'char3', name: '副将', type: 'supporting', desc: '霍去病麾下忠诚的副将', image: 'https://picsum.photos/seed/char3/200/300', configured: false },
+      { id: 'char4', name: '士兵甲', type: 'extra', desc: '普通士兵', image: 'https://picsum.photos/seed/char4/200/300', configured: true },
+      { id: 'char5', name: '匈奴首领', type: 'supporting', desc: '匈奴大军统帅', image: 'https://picsum.photos/seed/char5/200/300', configured: true },
+    ];
+
+    const scenes = [
+      { id: 'scene1', name: '现代办公室', time: 'day', desc: '现代都市风格的办公室', image: 'https://picsum.photos/seed/scene1/300/200', configured: true },
+      { id: 'scene2', name: '汉代军营', time: 'day', desc: '汉代军营大帐', image: 'https://picsum.photos/seed/scene2/300/200', configured: true },
+      { id: 'scene3', name: '战场沙盘', time: 'day', desc: '战争指挥沙盘', image: 'https://picsum.photos/seed/scene3/300/200', configured: false },
+      { id: 'scene4', name: '塞外草原', time: 'dusk', desc: '辽阔的塞外草原', image: 'https://picsum.photos/seed/scene4/300/200', configured: true },
+      { id: 'scene5', name: '战场全景', time: 'day', desc: '万马奔腾的战场', image: 'https://picsum.photos/seed/scene5/300/200', configured: true },
+    ];
+
+    const props = [
+      { id: 'prop1', name: '将军剑', category: 'weapon', desc: '霍去病的佩剑', image: 'https://picsum.photos/seed/prop1/200/200', configured: true },
+      { id: 'prop2', name: '汉军军旗', category: 'other', desc: '绣有汉字的军旗', image: 'https://picsum.photos/seed/prop2/200/200', configured: false },
+      { id: 'prop3', name: '战马', category: 'vehicle', desc: '匈奴战马', image: 'https://picsum.photos/seed/prop3/200/200', configured: true },
+      { id: 'prop4', name: '将军盔甲', category: 'clothing', desc: '汉代将军盔甲', image: 'https://picsum.photos/seed/prop4/200/200', configured: true },
+    ];
+
+    const episodes = Array.from({ length: 30 }, (_, i) => ({
+      id: i + 1,
+      scene: ['现代办公室', '汉代军营', '战场', '塞外草原', '宫殿'][i % 5],
+      characters: ['霍去病,林晓', '霍去病,副将', '霍去病,匈奴首领', '林晓', '霍去病,林晓'][i % 5],
+      summary: `第${i + 1}集：${['霍去病初露锋芒', '深入敌后作战', '封狼居胥', '穿越者的困境', '知己知彼'][i % 5]}`
+    }));
+
+    const storyboards = [];
+    let shotId = 1;
+    for (let ep = 1; ep <= 30; ep++) {
+      const shotCount = 5 + Math.floor(Math.random() * 3);
+      for (let s = 1; s <= shotCount; s++) {
+        const hasVideo = Math.random() < 0.3;
+        const history = [];
+        if (hasVideo) {
+          const historyCount = Math.random() < 0.3 ? 3 : (Math.random() < 0.5 ? 2 : 1);
+          for (let h = 0; h < historyCount; h++) {
+            history.push({
+              id: h + 1,
+              success: h === historyCount - 1 ? true : Math.random() < 0.3,
+              time: new Date(Date.now() - (historyCount - h) * 3600000).toLocaleString()
+            });
+          }
+        }
+        storyboards.push({
+          id: shotId++,
+          episode: ep,
+          shot: s,
+          scene: episodes[ep - 1].scene,
+          content: `霍去病率军深入漠北，寻找匈奴主力。战场硝烟弥漫，士兵们严阵以待。`,
+          characters: ['霍去病', '副将'],
+          props: ['将军剑'],
+          dialogue: '霍去病："出击！"',
+          shotType: ['特写', '近景', '中景', '全景', '远景'][s % 5],
+          cameraMove: ['固定', '推镜', '拉镜', '跟拍', '横移'][s % 5],
+          duration: 5 + Math.floor(Math.random() * 6),
+          hasVideo,
+          videoHistory: history
+        });
+      }
+    }
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('scriptContent').textContent = scriptContent;
+      renderEpisodeTabs();
+      renderEpisodes();
+      renderStoryboards();
+      renderVideoCards();
+      renderAssetLibs();
+    });
+
+    // 左侧导航高亮
+    function setActiveNav(el) {
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.style.color = '#888';
+        item.style.borderLeftColor = 'transparent';
+        item.classList.remove('active');
+      });
+      el.style.color = '#00d4ff';
+      el.style.borderLeftColor = '#00d4ff';
+      el.classList.add('active');
+    }
+
+    // 监听滚动高亮导航
+    window.addEventListener('scroll', () => {
+      const sections = ['step1', 'step2', 'step3', 'step4'];
+      for (const id of sections.reverse()) {
+        const section = document.getElementById(id);
+        if (section && section.getBoundingClientRect().top < 200) {
+          const nav = document.querySelector(`a[href="#${id}"]`);
+          if (nav) setActiveNav(nav);
+          break;
+        }
+      }
+    });
+
+    // AI剧本分析
+    function analyzeScript() {
+      const btn = document.getElementById('analyzeBtn');
+      const progress = document.getElementById('analyzeProgress');
+      const progressText = document.getElementById('progressText');
+      
+      btn.disabled = true;
+      btn.style.opacity = '0.6';
+      progress.style.display = 'block';
+      
+      const steps = ['正在清洗剧本...', '正在拆分镜...', '正在生成剧集...', '分析完成！'];
+      let step = 0;
+      
+      const interval = setInterval(() => {
+        if (step < steps.length) {
+          progressText.textContent = steps[step];
+          step++;
+        } else {
+          clearInterval(interval);
+          setTimeout(() => {
+            progress.style.display = 'none';
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            renderEpisodeTabs();
+            renderEpisodes();
+            renderStoryboards();
+            renderVideoCards();
+          }, 500);
+        }
+      }, 800);
+    }
+
+    // 渲染集数标签
+    function renderEpisodeTabs() {
+      const container = document.getElementById('episodeTabs');
+      container.innerHTML = '';
+      for (let i = 1; i <= 30; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = `第${i}集`;
+        btn.style.cssText = i === currentEpisode 
+          ? 'background: linear-gradient(135deg, #00d4ff, #6366f1); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px;'
+          : 'background: rgba(30, 30, 50, 0.8); color: #888; border: 1px solid #2a2a3e; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px;';
+        btn.onclick = () => {
+          currentEpisode = i;
+          currentEpisodePage = 1;
+          renderEpisodeTabs();
+          renderEpisodes();
+          renderStoryboards();
+          renderVideoCards();
+        };
+        container.appendChild(btn);
+      }
+    }
+
+    // 渲染剧集卡片
+    function renderEpisodes() {
+      const container = document.getElementById('episodeCards');
+      const start = (currentEpisodePage - 1) * episodesPerPage;
+      const end = start + episodesPerPage;
+      const pageEpisodes = episodes.slice(start, end);
+      
+      container.innerHTML = pageEpisodes.map(ep => {
+        const storyboardCount = storyboards.filter(s => s.episode === ep.id).length;
+        return `
+          <div style="background: rgba(30, 30, 50, 0.6); border: 1px solid #2a2a3e; border-radius: 8px; padding: 16px; transition: all 0.2s;" onmouseover="this.style.borderColor='#6366f1'" onmouseout="this.style.borderColor='#2a2a3e'">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-size: 14px; font-weight: 600; color: #fff;">第${ep.id}集</span>
+              <span style="font-size: 11px; color: #888; background: rgba(99, 102, 241, 0.2); padding: 2px 8px; border-radius: 4px;">${storyboardCount}分镜</span>
+            </div>
+            <div style="font-size: 12px; color: #888; margin-bottom: 4px;">场景：${ep.scene}</div>
+            <div style="font-size: 12px; color: #888; margin-bottom: 8px;">人物：${ep.characters}</div>
+            <div style="font-size: 12px; color: #b0b0b0; margin-bottom: 12px;">${ep.summary}</div>
+            <div style="display: flex; gap: 8px;">
+              <button onclick="openEpisodeEdit(${ep.id})" style="flex: 1; background: rgba(99, 102, 241, 0.2); color: #6366f1; border: 1px solid #6366f1; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;" onmouseover="this.style.background='rgba(99, 102, 241, 0.4)'" onmouseout="this.style.background='rgba(99, 102, 241, 0.2)'">编辑</button>
+              <button onclick="deleteEpisodeById(${ep.id})" style="flex: 1; background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;" onmouseover="this.style.background='rgba(239, 68, 68, 0.4)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.2)'">删除</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      renderEpisodePagination();
+    }
+
+    // 渲染剧集分页
+    function renderEpisodePagination() {
+      const container = document.getElementById('episodePagination');
+      const totalPages = Math.ceil(episodes.length / episodesPerPage);
+      
+      container.innerHTML = '';
+      if (totalPages <= 1) return;
+      
+      const prevBtn = document.createElement('button');
+      prevBtn.textContent = '‹';
+      prevBtn.style.cssText = 'background: rgba(30, 30, 50, 0.8); color: #888; border: 1px solid #2a2a3e; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; font-size: 16px;';
+      prevBtn.disabled = currentEpisodePage === 1;
+      prevBtn.onclick = () => { currentEpisodePage--; renderEpisodes(); };
+      container.appendChild(prevBtn);
+      
+      for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.style.cssText = i === currentEpisodePage
+          ? 'background: #6366f1; color: #fff; border: none; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; font-size: 13px;'
+          : 'background: rgba(30, 30, 50, 0.8); color: #888; border: 1px solid #2a2a3e; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; font-size: 13px;';
+        btn.onclick = () => { currentEpisodePage = i; renderEpisodes(); };
+        container.appendChild(btn);
+      }
+      
+      const nextBtn = document.createElement('button');
+      nextBtn.textContent = '›';
+      nextBtn.style.cssText = 'background: rgba(30, 30, 50, 0.8); color: #888; border: 1px solid #2a2a3e; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; font-size: 16px;';
+      nextBtn.disabled = currentEpisodePage === totalPages;
+      nextBtn.onclick = () => { currentEpisodePage++; renderEpisodes(); };
+      container.appendChild(nextBtn);
+    }
+
+    // 渲染分镜列表
+    function renderStoryboards() {
+      const tbody = document.getElementById('storyboardTable');
+      const currentStoryboards = storyboards.filter(s => s.episode === currentEpisode);
+      
+      tbody.innerHTML = currentStoryboards.map(sb => `
+        <tr style="border-bottom: 1px solid #2a2a3e; transition: background 0.2s;" onmouseover="this.style.background='rgba(99, 102, 241, 0.05)'" onmouseout="this.style.background='transparent'">
+          <td style="padding: 12px 8px; color: #00d4ff; font-weight: 500;">${sb.episode}-${sb.shot}</td>
+          <td style="padding: 12px 8px; color: #b0b0b0; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${sb.content}">${sb.content.substring(0, 30)}...</td>
+          <td style="padding: 12px 8px;">
+            <select onchange="updateStoryboard(${sb.id}, 'shotType', this.value)" style="background: rgba(30, 30, 50, 0.8); color: #e0e0e0; border: 1px solid #2a2a3e; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+              ${['特写', '近景', '中景', '全景', '远景'].map(t => `<option value="${t}" ${sb.shotType === t ? 'selected' : ''}>${t}</option>`).join('')}
+            </select>
+          </td>
+          <td style="padding: 12px 8px;">
+            <select onchange="updateStoryboard(${sb.id}, 'cameraMove', this.value)" style="background: rgba(30, 30, 50, 0.8); color: #e0e0e0; border: 1px solid #2a2a3e; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+              ${['固定', '推镜', '拉镜', '跟拍', '横移', '升降'].map(t => `<option value="${t}" ${sb.cameraMove === t ? 'selected' : ''}>${t}</option>`).join('')}
+            </select>
+          </td>
+          <td style="padding: 12px 8px;">
+            ${sb.characters.map(c => {
+              const char = characters.find(ch => ch.name === c);
+              return `<span onclick="openCharacterEdit('${char?.id}')" style="display: inline-block; background: ${char?.configured ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; color: ${char?.configured ? '#22c55e' : '#ef4444'}; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin: 2px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">${c}</span>`;
+            }).join('')}
+          </td>
+          <td style="padding: 12px 8px;">
+            <span onclick="openSceneEdit('${scenes.find(s => s.name === sb.scene)?.id}')" style="display: inline-block; background: rgba(0, 212, 255, 0.2); color: #00d4ff; padding: 2px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(0, 212, 255, 0.3)'" onmouseout="this.style.background='rgba(0, 212, 255, 0.2)'">${sb.scene}</span>
+          </td>
+          <td style="padding: 12px 8px;">
+            ${sb.props.map(p => {
+              const prop = props.find(pr => pr.name === p);
+              return `<span onclick="openPropEdit('${prop?.id}')" style="display: inline-block; background: ${prop?.configured ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; color: ${prop?.configured ? '#22c55e' : '#ef4444'}; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin: 2px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">${p}</span>`;
+            }).join('')}
+          </td>
+          <td style="padding: 12px 8px; color: #888; font-size: 12px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${sb.dialogue}</td>
+          <td style="padding: 12px 8px;">
+            <button onclick="openDetailModal(${sb.id})" style="background: rgba(99, 102, 241, 0.2); color: #6366f1; border: 1px solid #6366f1; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-right: 4px;" onmouseover="this.style.background='rgba(99, 102, 241, 0.4)'" onmouseout="this.style.background='rgba(99, 102, 241, 0.2)'">详情</button>
+            <button onclick="deleteStoryboard(${sb.id})" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;" onmouseover="this.style.background='rgba(239, 68, 68, 0.4)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.2)'">删除</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // 渲染视频卡片
+    function renderVideoCards() {
+      const container = document.getElementById('videoCards');
+      const currentStoryboards = storyboards.filter(s => s.episode === currentEpisode);
+      
+      container.innerHTML = currentStoryboards.map(sb => {
+        const status = sb.hasVideo ? (sb.videoHistory[sb.videoHistory.length - 1]?.success ? 'success' : 'failed') : 'pending';
+        const statusMap = {
+          pending: { text: '待生成', bg: 'rgba(100, 100, 100, 0.2)', color: '#888' },
+          generating: { text: '生成中...', bg: 'rgba(0, 212, 255, 0.2)', color: '#00d4ff' },
+          success: { text: '已生成', bg: 'rgba(34, 197, 94, 0.2)', color: '#22c55e' },
+          failed: { text: '失败', bg: 'rgba(239, 68, 68, 0.2)', color: '#ef4444' }
+        };
+        const st = statusMap[status];
+        
+        return `
+          <div style="background: rgba(30, 30, 50, 0.6); border: 1px solid #2a2a3e; border-radius: 8px; padding: 16px;">
+            <div style="margin-bottom: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 14px; font-weight: 600; color: #fff;">镜${sb.shot}</span>
+                <span style="font-size: 11px; padding: 2px 8px; border-radius: 4px; background: ${st.bg}; color: ${st.color};">${st.text}</span>
+              </div>
+              <div style="font-size: 12px; color: #888; margin-bottom: 8px;">${sb.content.substring(0, 50)}...</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                ${sb.characters.map(c => `<span style="font-size: 10px; background: rgba(99, 102, 241, 0.2); color: #6366f1; padding: 2px 6px; border-radius: 3px;">${c}</span>`).join('')}
+                <span style="font-size: 10px; background: rgba(0, 212, 255, 0.2); color: #00d4ff; padding: 2px 6px; border-radius: 3px;">${sb.scene}</span>
+                ${sb.props.map(p => `<span style="font-size: 10px; background: rgba(245, 158, 11, 0.2); color: #f59e0b; padding: 2px 6px; border-radius: 3px;">${p}</span>`).join('')}
+              </div>
+            </div>
+            <div style="height: 120px; background: rgba(0, 0, 0, 0.3); border-radius: 6px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; color: #666; font-size: 12px; overflow: hidden;">
+              ${sb.hasVideo ? `<img src="https://picsum.photos/seed/video${sb.id}/200/120" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;" onclick="previewImage(this.src)">` : '视频预览区'}
+            </div>
+            <div style="display: flex; gap: 8px;">
+              ${status === 'pending' ? `<button onclick="generateVideo(${sb.id})" style="flex: 1; background: linear-gradient(135deg, #00d4ff, #6366f1); color: #fff; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500;">🎬 生成视频</button>` : ''}
+              ${status === 'generating' ? `<button style="flex: 1; background: rgba(0, 212, 255, 0.2); color: #00d4ff; border: 1px solid #00d4ff; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; animation: pulse 1.5s infinite;">生成中...</button>` : ''}
+              ${status === 'success' ? `<button onclick="playVideo(${sb.id})" style="flex: 1; background: rgba(34, 197, 94, 0.2); color: #22c55e; border: 1px solid #22c55e; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px;">▶ 播放</button>` : ''}
+              ${status === 'failed' ? `<button onclick="generateVideo(${sb.id})" style="flex: 1; background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px;">⚠️ 重试</button>` : ''}
+              ${sb.hasVideo && sb.videoHistory.length >= 2 ? `<button onclick="openHistoryFromCard(${sb.id})" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px;">📋 历史</button>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 弹窗控制
+    function openModal(id) {
+      document.getElementById(id).style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+
+    // 分镜详情弹窗
+    function openDetailModal(id) {
+      currentStoryboardId = id;
+      const sb = storyboards.find(s => s.id === id);
+      if (!sb) return;
+      
+      document.getElementById('detailShotNum').value = `${sb.episode}-${sb.shot}`;
+      document.getElementById('detailShotType').value = sb.shotType;
+      document.getElementById('detailCameraMove').value = sb.cameraMove;
+      document.getElementById('detailDuration').value = sb.duration;
+      document.getElementById('detailContent').value = sb.content;
+      document.getElementById('detailDialogue').value = sb.dialogue;
+      document.getElementById('detailHasAudio').checked = true;
+      document.getElementById('detailVideoPrompt').value = sb.content;
+      
+      // 渲染关联标签
+      document.getElementById('detailCharTags').innerHTML = sb.characters.map(c => {
+        const char = characters.find(ch => ch.name === c);
+        return `<span onclick="openCharacterEdit('${char?.id}')" style="display: inline-block; background: ${char?.configured ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; color: ${char?.configured ? '#22c55e' : '#ef4444'}; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">${c}</span>`;
+      }).join('');
+      
+      document.getElementById('detailSceneTags').innerHTML = `<span onclick="openSceneEdit('${scenes.find(s => s.name === sb.scene)?.id}')" style="display: inline-block; background: rgba(0, 212, 255, 0.2); color: #00d4ff; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">${sb.scene}</span>`;
+      
+      document.getElementById('detailPropTags').innerHTML = sb.props.map(p => {
+        const prop = props.find(pr => pr.name === p);
+        return `<span onclick="openPropEdit('${prop?.id}')" style="display: inline-block; background: ${prop?.configured ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; color: ${prop?.configured ? '#22c55e' : '#ef4444'}; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">${p}</span>`;
+      }).join('');
+      
+      // 填充多参配置下拉
+      populateVideoSelects('detail');
+      
+      // 预设关联资产
+      if (sb.characters[0]) {
+        const char = characters.find(c => c.name === sb.characters[0]);
+        if (char) {
+          document.getElementById('detailVideoChar').value = char.id;
+          updateVideoAssetImage('detail', 'char');
+        }
+      }
+      const scene = scenes.find(s => s.name === sb.scene);
+      if (scene) {
+        document.getElementById('detailVideoScene').value = scene.id;
+        updateVideoAssetImage('detail', 'scene');
+      }
+      
+      // 显示历史按钮
+      document.getElementById('detailHistoryBtn').style.display = sb.videoHistory.length >= 2 ? 'inline-block' : 'none';
+      historyContext = 'detail';
+      
+      openModal('detailModal');
+    }
+
+    // 填充视频生成下拉选项
+    function populateVideoSelects(prefix) {
+      const charSelect = document.getElementById(`${prefix}VideoChar`);
+      const sceneSelect = document.getElementById(`${prefix}VideoScene`);
+      const propSelect = document.getElementById(`${prefix}VideoProp`);
+      
+      charSelect.innerHTML = '<option value="">选择角色...</option>' + characters.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+      sceneSelect.innerHTML = '<option value="">选择场景...</option>' + scenes.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+      propSelect.innerHTML = '<option value="">选择道具...</option>' + props.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+    }
+
+    // 更新资产图片
+    function updateVideoAssetImage(prefix, type) {
+      const selectId = `${prefix}Video${type.charAt(0).toUpperCase() + type.slice(1)}`;
+      const containerId = `${prefix}${type.charAt(0).toUpperCase() + type.slice(1)}Images`;
+      const select = document.getElementById(selectId);
+      const container = document.getElementById(containerId);
+      
+      let items = [];
+      if (type === 'char') items = characters;
+      else if (type === 'scene') items = scenes;
+      else if (type === 'prop') items = props;
+      
+      const selected = items.find(i => i.id === select.value);
+      
+      if (selected) {
+        container.innerHTML = `
+          <div style="position: relative; width: 80px; height: 80px;" onmouseover="this.querySelector('.overlay').style.display='flex'" onmouseout="this.querySelector('.overlay').style.display='none'">
+            <img src="${selected.image}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px; cursor: pointer;" onclick="previewImage('${selected.image}')">
+            <div class="overlay" style="display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.6); border-radius: 6px; align-items: center; justify-content: center; gap: 8px;">
+              <button onclick="previewImage('${selected.image}')" style="background: rgba(0,212,255,0.2); border: none; color: #00d4ff; width: 28px; height: 28px; border-radius: 4px; cursor: pointer; font-size: 14px;">🔍</button>
+              <button onclick="this.closest('div').parentElement.querySelector('img').src='https://picsum.photos/seed/new${Date.now()}/200/200'" style="background: rgba(245,158,11,0.2); border: none; color: #f59e0b; width: 28px; height: 28px; border-radius: 4px; cursor: pointer; font-size: 14px;">↻</button>
+            </div>
+          </div>
+        `;
+      } else {
+        container.innerHTML = '';
+      }
+    }
+
+    // 保存分镜详情
+    function saveStoryboardDetail() {
+      const sb = storyboards.find(s => s.id === currentStoryboardId);
+      if (!sb) return;
+      
+      sb.shotType = document.getElementById('detailShotType').value;
+      sb.cameraMove = document.getElementById('detailCameraMove').value;
+      sb.duration = parseInt(document.getElementById('detailDuration').value);
+      sb.content = document.getElementById('detailContent').value;
+      sb.dialogue = document.getElementById('detailDialogue').value;
+      
+      renderStoryboards();
+      renderVideoCards();
+      alert('保存成功！');
+    }
+
+    // 生成视频
+    function generateVideo(id) {
+      const sb = storyboards.find(s => s.id === id);
+      if (!sb) return;
+      
+      sb.hasVideo = true;
+      sb.videoHistory.push({
+        id: sb.videoHistory.length + 1,
+        success: true,
+        time: new Date().toLocaleString()
+      });
+      
+      renderVideoCards();
+    }
+
+    function generateVideoFromDetail() {
+      if (currentStoryboardId) {
+        generateVideo(currentStoryboardId);
+        const sb = storyboards.find(s => s.id === currentStoryboardId);
+        document.getElementById('detailHistoryBtn').style.display = sb.videoHistory.length >= 2 ? 'inline-block' : 'none';
+      }
+    }
+
+    // 播放视频
+    function playVideo(id) {
+      alert(`播放视频 ${id}`);
+    }
+
+    // 历史记录弹窗
+    function openHistoryModal(context) {
+      historyContext = context;
+      const sb = getCurrentStoryboardForHistory();
+      if (!sb) return;
+      
+      const container = document.getElementById('historyList');
+      container.innerHTML = sb.videoHistory.map(h => `
+        <div style="display: flex; align-items: center; gap: 16px; padding: 12px; background: rgba(30, 30, 50, 0.6); border-radius: 8px; margin-bottom: 12px; border: 1px solid #2a2a3e;">
+          <div style="width: 60px; height: 40px; background: rgba(0,0,0,0.3); border-radius: 4px; overflow: hidden;">
+            <img src="https://picsum.photos/seed/h${sb.id}${h.id}/60/40" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          <div style="flex: 1;">
+            <div style="font-size: 13px; color: #fff; margin-bottom: 4px;">第${h.id}次生成</div>
+            <div style="font-size: 11px; color: #888;">${h.time}</div>
+          </div>
+          <span style="font-size: 11px; padding: 2px 8px; border-radius: 4px; background: ${h.success ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; color: ${h.success ? '#22c55e' : '#ef4444'};">${h.success ? '成功' : '失败'}</span>
+          <div style="display: flex; gap: 8px;">
+            ${h.success ? `<button onclick="previewImage('https://picsum.photos/seed/h${sb.id}${h.id}/200/120')" style="background: rgba(0, 212, 255, 0.2); color: #00d4ff; border: 1px solid #00d4ff; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">播放</button>` : ''}
+            ${h.success ? `<button style="background: rgba(34, 197, 94, 0.2); color: #22c55e; border: 1px solid #22c55e; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">确认</button>` : ''}
+            ${!h.success ? `<button onclick="retryGenerate(${sb.id}, ${h.id})" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">重试</button>` : ''}
+            <button onclick="deleteHistory(${sb.id}, ${h.id})" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">删除</button>
+          </div>
+        </div>
+      `).join('');
+      
+      openModal('historyModal');
+    }
+
+    function getCurrentStoryboardForHistory() {
+      if (historyContext === 'detail') {
+        return storyboards.find(s => s.id === currentStoryboardId);
+      }
+      return storyboards.find(s => s.id === historyContext);
+    }
+
+    function openHistoryFromCard(id) {
+      historyContext = id;
+      openHistoryModal('card');
+    }
+
+    function retryGenerate(sbId, historyId) {
+      const sb = storyboards.find(s => s.id === sbId);
+      if (!sb) return;
+      
+      sb.videoHistory.push({
+        id: sb.videoHistory.length + 1,
+        success: Math.random() < 0.7,
+        time: new Date().toLocaleString()
+      });
+      
+      openHistoryModal(historyContext);
+      renderVideoCards();
+    }
+
+    function deleteHistory(sbId, historyId) {
+      const sb = storyboards.find(s => s.id === sbId);
+      if (!sb) return;
+      
+      sb.videoHistory = sb.videoHistory.filter(h => h.id !== historyId);
+      if (sb.videoHistory.length === 0) sb.hasVideo = false;
+      
+      openHistoryModal(historyContext);
+      renderVideoCards();
+    }
+
+    // 批量生成
+    function batchGenerate() {
+      const pending = storyboards.filter(s => s.episode === currentEpisode && !s.hasVideo);
+      if (pending.length === 0) {
+        alert('当前集数所有分镜已生成视频');
+        return;
+      }
+      alert(`开始批量生成 ${pending.length} 个视频...`);
+      pending.forEach(sb => {
+        sb.hasVideo = true;
+        sb.videoHistory.push({
+          id: 1,
+          success: true,
+          time: new Date().toLocaleString()
+        });
+      });
+      renderVideoCards();
+    }
+
+    // 新增分镜
+    function openAddStoryboardModal() {
+      const newId = Math.max(...storyboards.map(s => s.id)) + 1;
+      const currentShotCount = storyboards.filter(s => s.episode === currentEpisode).length;
+      
+      const newSb = {
+        id: newId,
+        episode: currentEpisode,
+        shot: currentShotCount + 1,
+        scene: episodes[currentEpisode - 1].scene,
+        content: '新分镜内容...',
+        characters: ['霍去病'],
+        props: [],
+        dialogue: '',
+        shotType: '中景',
+        cameraMove: '固定',
+        duration: 5,
+        hasVideo: false,
+        videoHistory: []
+      };
+      
+      storyboards.push(newSb);
+      renderStoryboards();
+      openDetailModal(newId);
+    }
+
+    // 更新分镜
+    function updateStoryboard(id, field, value) {
+      const sb = storyboards.find(s => s.id === id);
+      if (sb) {
+        sb[field] = value;
+        renderVideoCards();
+      }
+    }
+
+    // 删除分镜
+    function deleteStoryboard(id) {
+      if (confirm('确定删除此分镜？')) {
+        const idx = storyboards.findIndex(s => s.id === id);
+        if (idx > -1) {
+          storyboards.splice(idx, 1);
+          renderStoryboards();
+          renderVideoCards();
+        }
+      }
+    }
+
+    // 剧集编辑
+    function openEpisodeEdit(id) {
+      currentEpisodeId = id;
+      const ep = episodes.find(e => e.id === id);
+      if (!ep) return;
+      
+      document.getElementById('episodeEditScene').value = ep.scene;
+      document.getElementById('episodeEditCharacters').value = ep.characters;
+      document.getElementById('episodeEditSummary').value = ep.summary;
+      
+      openModal('episodeEditModal');
+    }
+
+    function saveEpisode() {
+      const ep = episodes.find(e => e.id === currentEpisodeId);
+      if (!ep) return;
+      
+      ep.scene = document.getElementById('episodeEditScene').value;
+      ep.characters = document.getElementById('episodeEditCharacters').value;
+      ep.summary = document.getElementById('episodeEditSummary').value;
+      
+      renderEpisodes();
+      renderStoryboards();
+      closeModal('episodeEditModal');
+    }
+
+    function deleteEpisode() {
+      if (confirm('确定删除此剧集？')) {
+        const idx = episodes.findIndex(e => e.id === currentEpisodeId);
+        if (idx > -1) {
+          episodes.splice(idx, 1);
+          // 同时删除关联分镜
+          for (let i = storyboards.length - 1; i >= 0; i--) {
+            if (storyboards[i].episode === currentEpisodeId) {
+              storyboards.splice(i, 1);
+            }
+          }
+          renderEpisodeTabs();
+          renderEpisodes();
+          renderStoryboards();
+          closeModal('episodeEditModal');
+        }
+      }
+    }
+
+    function deleteEpisodeById(id) {
+      currentEpisodeId = id;
+      deleteEpisode();
+    }
+
+    // 角色库
+    function renderAssetLibs() {
+      // 角色库
+      document.getElementById('characterLibList').innerHTML = characters.map(c => `
+        <div style="background: rgba(30, 30, 50, 0.6); border: 1px solid #2a2a3e; border-radius: 8px; overflow: hidden; transition: all 0.2s;" onmouseover="this.style.borderColor='#6366f1'" onmouseout="this.style.borderColor='#2a2a3e'">
+          <img src="${c.image}" style="width: 100%; height: 120px; object-fit: cover;">
+          <div style="padding: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-size: 14px; font-weight: 600; color: #fff;">${c.name}</span>
+              <span style="font-size: 10px; padding: 2px 6px; border-radius: 3px; background: ${c.type === 'protagonist' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(100, 100, 100, 0.3)'}; color: ${c.type === 'protagonist' ? '#6366f1' : '#888'};">${c.type === 'protagonist' ? '主角' : c.type === 'supporting' ? '配角' : '龙套'}</span>
+            </div>
+            <div style="font-size: 11px; color: #888; margin-bottom: 8px;">${c.desc}</div>
+            <div style="display: flex; gap: 8px;">
+              <button onclick="openCharacterEdit('${c.id}')" style="flex: 1; background: rgba(99, 102, 241, 0.2); color: #6366f1; border: 1px solid #6366f1; padding: 6px; border-radius: 4px; cursor: pointer; font-size: 12px;">编辑</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      
+      // 场景库
+      document.getElementById('sceneLibList').innerHTML = scenes.map(s => `
+        <div style="background: rgba(30, 30, 50, 0.6); border: 1px solid #2a2a3e; border-radius: 8px; overflow: hidden; transition: all 0.2s;" onmouseover="this.style.borderColor='#00d4ff'" onmouseout="this.style.borderColor='#2a2a3e'">
+          <img src="${s.image}" style="width: 100%; height: 120px; object-fit: cover;">
+          <div style="padding: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-size: 14px; font-weight: 600; color: #fff;">${s.name}</span>
+              <span style="font-size: 10px; padding: 2px 6px; border-radius: 3px; background: rgba(0, 212, 255, 0.2); color: #00d4ff;">${s.time === 'day' ? '白天' : s.time === 'night' ? '夜晚' : s.time === 'dusk' ? '黄昏' : '黎明'}</span>
+            </div>
+            <div style="font-size: 11px; color: #888; margin-bottom: 8px;">${s.desc}</div>
+            <div style="display: flex; gap: 8px;">
+              <button onclick="openSceneEdit('${s.id}')" style="flex: 1; background: rgba(0, 212, 255, 0.2); color: #00d4ff; border: 1px solid #00d4ff; padding: 6px; border-radius: 4px; cursor: pointer; font-size: 12px;">编辑</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      
+      // 道具库
+      document.getElementById('propLibList').innerHTML = props.map(p => `
+        <div style="background: rgba(30, 30, 50, 0.6); border: 1px solid #2a2a3e; border-radius: 8px; overflow: hidden; transition: all 0.2s;" onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='#2a2a3e'">
+          <img src="${p.image}" style="width: 100%; height: 120px; object-fit: cover;">
+          <div style="padding: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-size: 14px; font-weight: 600; color: #fff;">${p.name}</span>
+              <span style="font-size: 10px; padding: 2px 6px; border-radius: 3px; background: rgba(245, 158, 11, 0.2); color: #f59e0b;">${p.category === 'weapon' ? '武器' : p.category === 'clothing' ? '服饰' : p.category === 'vehicle' ? '载具' : '其他'}</span>
+            </div>
+            <div style="font-size: 11px; color: #888; margin-bottom: 8px;">${p.desc}</div>
+            <div style="display: flex; gap: 8px;">
+              <button onclick="openPropEdit('${p.id}')" style="flex: 1; background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; padding: 6px; border-radius: 4px; cursor: pointer; font-size: 12px;">编辑</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // 角色编辑
+    function openCharacterEdit(id) {
+      if (!id) return;
+      currentCharId = id;
+      const char = characters.find(c => c.id === id);
+      if (!char) return;
+      
+      document.getElementById('charEditName').value = char.name;
+      document.getElementById('charEditType').value = char.type;
+      document.getElementById('charEditDesc').value = char.desc;
+      
+      document.getElementById('charEditImages').innerHTML = `
+        <div style="position: relative; width: 150px; height: 200px;" onmouseover="this.querySelector('.overlay').style.display='flex'" onmouseout="this.querySelector('.overlay').style.display='none'">
+          <img src="${char.image}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px; cursor: pointer;" onclick="previewImage('${char.image}')">
+          <div class="overlay" style="display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.6); border-radius: 6px; align-items: center; justify-content: center; gap: 8px;">
+            <button onclick="previewImage('${char.image}')" style="background: rgba(0,212,255,0.2); border: none; color: #00d4ff; width: 36px; height: 36px; border-radius: 4px; cursor: pointer; font-size: 16px;">🔍</button>
+            <button onclick="replaceCharImage()" style="background: rgba(245,158,11,0.2); border: none; color: #f59e0b; width: 36px; height: 36px; border-radius: 4px; cursor: pointer; font-size: 16px;">↻</button>
+          </div>
+        </div>
+      `;
+      
+      openModal('characterEditModal');
+    }
+
+    function saveCharacter() {
+      const char = characters.find(c => c.id === currentCharId);
+      if (!char) return;
+      
+      char.name = document.getElementById('charEditName').value;
+      char.type = document.getElementById('charEditType').value;
+      char.desc = document.getElementById('charEditDesc').value;
+      
+      renderAssetLibs();
+      renderStoryboards();
+      closeModal('characterEditModal');
+    }
+
+    function deleteCharacter() {
+      if (confirm('确定删除此角色？')) {
+        const idx = characters.findIndex(c => c.id === currentCharId);
+        if (idx > -1) {
+          characters.splice(idx, 1);
+          renderAssetLibs();
+          renderStoryboards();
+          closeModal('characterEditModal');
+        }
+      }
+    }
+
+    function replaceCharImage() {
+      const char = characters.find(c => c.id === currentCharId);
+      if (char) {
+        char.image = `https://picsum.photos/seed/new${Date.now()}/200/300`;
+        openCharacterEdit(currentCharId);
+        renderAssetLibs();
+      }
+    }
+
+    // 场景编辑
+    function openSceneEdit(id) {
+      if (!id) return;
+      currentSceneId = id;
+      const scene = scenes.find(s => s.id === id);
+      if (!scene) return;
+      
+      document.getElementById('sceneEditName').value = scene.name;
+      document.getElementById('sceneEditTime').value = scene.time;
+      document.getElementById('sceneEditDesc').value = scene.desc;
+      
+      document.getElementById('sceneEditImages').innerHTML = `
+        <div style="position: relative; width: 200px; height: 133px;" onmouseover="this.querySelector('.overlay').style.display='flex'" onmouseout="this.querySelector('.overlay').style.display='none'">
+          <img src="${scene.image}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px; cursor: pointer;" onclick="previewImage('${scene.image}')">
+          <div class="overlay" style="display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.6); border-radius: 6px; align-items: center; justify-content: center; gap: 8px;">
+            <button onclick="previewImage('${scene.image}')" style="background: rgba(0,212,255,0.2); border: none; color: #00d4ff; width: 36px; height: 36px; border-radius: 4px; cursor: pointer; font-size: 16px;">🔍</button>
+            <button onclick="replaceSceneImage()" style="background: rgba(245,158,11,0.2); border: none; color: #f59e0b; width: 36px; height: 36px; border-radius: 4px; cursor: pointer; font-size: 16px;">↻</button>
+          </div>
+        </div>
+      `;
+      
+      openModal('sceneEditModal');
+    }
+
+    function saveScene() {
+      const scene = scenes.find(s => s.id === currentSceneId);
+      if (!scene) return;
+      
+      scene.name = document.getElementById('sceneEditName').value;
+      scene.time = document.getElementById('sceneEditTime').value;
+      scene.desc = document.getElementById('sceneEditDesc').value;
+      
+      renderAssetLibs();
+      renderStoryboards();
+      closeModal('sceneEditModal');
+    }
+
+    function deleteScene() {
+      if (confirm('确定删除此场景？')) {
+        const idx = scenes.findIndex(s => s.id === currentSceneId);
+        if (idx > -1) {
+          scenes.splice(idx, 1);
+          renderAssetLibs();
+          renderStoryboards();
+          closeModal('sceneEditModal');
+        }
+      }
+    }
+
+    function replaceSceneImage() {
+      const scene = scenes.find(s => s.id === currentSceneId);
+      if (scene) {
+        scene.image = `https://picsum.photos/seed/new${Date.now()}/300/200`;
+        openSceneEdit(currentSceneId);
+        renderAssetLibs();
+      }
+    }
+
+    // 道具编辑
+    function openPropEdit(id) {
+      if (!id) return;
+      currentPropId = id;
+      const prop = props.find(p => p.id === id);
+      if (!prop) return;
+      
+      document.getElementById('propEditName').value = prop.name;
+      document.getElementById('propEditCategory').value = prop.category;
+      document.getElementById('propEditDesc').value = prop.desc;
+      
+      document.getElementById('propEditImages').innerHTML = `
+        <div style="position: relative; width: 120px; height: 120px;" onmouseover="this.querySelector('.overlay').style.display='flex'" onmouseout="this.querySelector('.overlay').style.display='none'">
+          <img src="${prop.image}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px; cursor: pointer;" onclick="previewImage('${prop.image}')">
+          <div class="overlay" style="display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.6); border-radius: 6px; align-items: center; justify-content: center; gap: 8px;">
+            <button onclick="previewImage('${prop.image}')" style="background: rgba(0,212,255,0.2); border: none; color: #00d4ff; width: 36px; height: 36px; border-radius: 4px; cursor: pointer; font-size: 16px;">🔍</button>
+            <button onclick="replacePropImage()" style="background: rgba(245,158,11,0.2); border: none; color: #f59e0b; width: 36px; height: 36px; border-radius: 4px; cursor: pointer; font-size: 16px;">↻</button>
+          </div>
+        </div>
+      `;
+      
+      openModal('propEditModal');
+    }
+
+    function saveProp() {
+      const prop = props.find(p => p.id === currentPropId);
+      if (!prop) return;
+      
+      prop.name = document.getElementById('propEditName').value;
+      prop.category = document.getElementById('propEditCategory').value;
+      prop.desc = document.getElementById('propEditDesc').value;
+      
+      renderAssetLibs();
+      renderStoryboards();
+      closeModal('propEditModal');
+    }
+
+    function deleteProp() {
+      if (confirm('确定删除此道具？')) {
+        const idx = props.findIndex(p => p.id === currentPropId);
+        if (idx > -1) {
+          props.splice(idx, 1);
+          renderAssetLibs();
+          renderStoryboards();
+          closeModal('propEditModal');
+        }
+      }
+    }
+
+    function replacePropImage() {
+      const prop = props.find(p => p.id === currentPropId);
+      if (prop) {
+        prop.image = `https://picsum.photos/seed/new${Date.now()}/200/200`;
+        openPropEdit(currentPropId);
+        renderAssetLibs();
+      }
+    }
+
+    // 重新生成资产图片
+    function regenerateImage(type) {
+      const btn = event.target;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '⏳ 生成中...';
+      btn.style.pointerEvents = 'none';
+      
+      setTimeout(() => {
+        const seed = Date.now();
+        let container, asset;
+        if (type === 'char') {
+          container = document.getElementById('charEditImages');
+          asset = characters.find(c => c.id === currentCharId);
+          if (asset) asset.image = `https://picsum.photos/seed/rg${seed}/200/200`;
+          openCharEdit(currentCharId);
+        } else if (type === 'scene') {
+          container = document.getElementById('sceneEditImages');
+          asset = scenes.find(s => s.id === currentSceneId);
+          if (asset) asset.image = `https://picsum.photos/seed/rg${seed}/200/200`;
+          openSceneEdit(currentSceneId);
+        } else if (type === 'prop') {
+          container = document.getElementById('propEditImages');
+          asset = props.find(p => p.id === currentPropId);
+          if (asset) asset.image = `https://picsum.photos/seed/rg${seed}/200/200`;
+          openPropEdit(currentPropId);
+        }
+        renderAssetLibs();
+        btn.innerHTML = originalText;
+        btn.style.pointerEvents = 'auto';
+      }, 1500);
+    }
+
+    // 图片预览
+    function previewImage(src) {
+      document.getElementById('previewImage').src = src;
+      document.getElementById('imagePreviewModal').style.display = 'flex';
+    }
+
+    // 添加参考图片
+    function addRefImage(prefix) {
+      const container = document.getElementById(`${prefix}RefImages`);
+      const currentCount = container.querySelectorAll('.ref-img').length;
+      if (currentCount >= 3) {
+        alert('最多上传3张参考图片');
+        return;
+      }
+      
+      const newImg = document.createElement('div');
+      newImg.className = 'ref-img';
+      newImg.style.cssText = 'position: relative; width: 80px; height: 80px;';
+      newImg.innerHTML = `
+        <div style="position: relative; width: 80px; height: 80px;" onmouseover="this.querySelector('.overlay').style.display='flex'" onmouseout="this.querySelector('.overlay').style.display='none'">
+          <img src="https://picsum.photos/seed/ref${Date.now()}/80/80" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px; cursor: pointer;" onclick="previewImage(this.src)">
+          <div class="overlay" style="display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.6); border-radius: 6px; align-items: center; justify-content: center; gap: 4px;">
+            <button onclick="previewImage(this.closest('div').querySelector('img').src)" style="background: rgba(0,212,255,0.2); border: none; color: #00d4ff; width: 24px; height: 24px; border-radius: 4px; cursor: pointer; font-size: 12px;">🔍</button>
+            <button onclick="this.closest('div').parentElement.remove()" style="background: rgba(239,68,68,0.2); border: none; color: #ef4444; width: 24px; height: 24px; border-radius: 4px; cursor: pointer; font-size: 12px;">✕</button>
+          </div>
+        </div>
+      `;
+      
+      const addBtn = container.querySelector('.add-btn');
+      container.insertBefore(newImg, addBtn);
+      updateRefImageCount(prefix);
+    }
+
+    function updateRefImageCount(prefix) {
+      const container = document.getElementById(`${prefix}RefImages`);
+      const count = container.querySelectorAll('.ref-img').length;
+      const label = container.parentElement.querySelector('label');
+      if (label) {
+        label.textContent = `参考图片 (${count}/3)`;
+      }
+    }
+  </script>
+</body>
+</html>
