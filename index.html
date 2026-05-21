@@ -1239,6 +1239,20 @@ tr:hover {
 </style>
 </head>
 <body>
+<div id="debugPanel" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#000;color:#0f0;font-family:monospace;font-size:14px;padding:10px;max-height:50vh;overflow:auto;display:none;"></div>
+<script>
+window.onerror = function(msg, url, line, col, err) {
+  var p = document.getElementById('debugPanel');
+  p.style.display = 'block';
+  p.innerHTML += '<div>ERROR: ' + msg + ' (line:' + line + ')</div>';
+  return false;
+};
+window.addEventListener('unhandledrejection', function(e) {
+  var p = document.getElementById('debugPanel');
+  p.style.display = 'block';
+  p.innerHTML += '<div>PROMISE ERROR: ' + e.reason + '</div>';
+});
+</script>
 
 <!-- 左侧导航 -->
 <nav class="sidebar">
